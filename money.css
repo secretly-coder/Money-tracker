@@ -1146,7 +1146,9 @@ input[type="number"]:focus {
 .btn-clear-goal:hover {
     background: var(--expense);
     color: var(--white);
-}/* FIX: Profile and Navigation Styles */
+}
+
+/* FIX: Profile and Navigation Styles */
 .profile-name-input {
     width: 100%;
     max-width: 300px;
@@ -1230,6 +1232,27 @@ body.dark-theme .bottom-nav {
     padding: 20px;
     text-align: center;
     height: 100%;
+}
+
+.empty-chart-image {
+    max-width: 150px;
+    width: 100%;
+    height: auto;
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.empty-chart-text-main {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.empty-chart-text-hint {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin: 0;
 }
 
 .goal-widget {
