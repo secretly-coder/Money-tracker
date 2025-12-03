@@ -28,6 +28,25 @@
           <p class="balance-label">Total Balance</p>
           <h2 class="balance-amount" id="balance">$0.00</h2>
         </div>
+
+        <!-- Goal Widget -->
+        <div class="goal-widget" id="goal-widget" style="display: none;">
+          <div class="goal-header">
+            <span class="goal-title-label">Current Goal</span>
+            <span class="goal-name" id="goal-name-display">Buying a Car</span>
+          </div>
+          <div class="goal-progress-container">
+            <div class="goal-progress-bar">
+              <div class="goal-progress-fill" id="goal-progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="goal-stats">
+            <span class="goal-current" id="goal-current-display">$0</span>
+            <span class="goal-target" id="goal-target-display">/ $10,000</span>
+          </div>
+          <p class="goal-message" id="goal-message">Keep going!</p>
+        </div>
+
         <div class="summary">
           <div class="summary-item income-summary">
             <p class="summary-label">Income</p>
@@ -143,7 +162,11 @@
       <div class="profile-section">
         <div class="profile-card">
           <div class="profile-image-container">
-            <img src="" alt="Profile" class="profile-image" id="profile-image">
+            <img src="" alt="Profile" class="profile-image" id="profile-image" style="display: none;">
+            <svg class="profile-default-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
             <label for="profile-image-input" class="profile-image-upload">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
@@ -155,6 +178,29 @@
           <div class="profile-info">
             <input type="text" id="profile-name" class="profile-name-input" placeholder="Your Name" maxlength="30">
             <p class="profile-subtitle">Money Tracker User</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goal Settings Section -->
+      <h3 class="section-title">Goal Settings</h3>
+      <div class="settings-section" style="margin-bottom: 24px;">
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Set a Financial Goal</h3>
+            <p>Track your progress towards a purchase</p>
+          </div>
+          <div class="goal-form">
+            <div class="form-group">
+              <label for="goal-name-input" class="input-label">Goal Name</label>
+              <input type="text" id="goal-name-input" placeholder="e.g. New Laptop" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="goal-target-input" class="input-label">Target Amount</label>
+              <input type="number" id="goal-target-input" placeholder="0.00" step="0.01">
+            </div>
+            <button id="save-goal-btn" class="btn-save-goal">Save Goal</button>
+            <button id="clear-goal-btn" class="btn-clear-goal" style="display: none;">Clear Goal</button>
           </div>
         </div>
       </div>
