@@ -5,7 +5,11 @@ let settings = {
     theme: 'light',
     currency: 'USD',
     profileName: '',
-    profileImage: ''
+    profileImage: '',
+    goal: {
+        name: '',
+        target: 0
+    }
 };
 
 // Currency symbols
@@ -51,6 +55,18 @@ const profileImageInput = document.getElementById('profile-image-input');
 const profileImage = document.getElementById('profile-image');
 const navAvatar = document.getElementById('nav-avatar');
 
+// Goal Elements
+const goalWidget = document.getElementById('goal-widget');
+const goalNameDisplay = document.getElementById('goal-name-display');
+const goalProgressFill = document.getElementById('goal-progress-fill');
+const goalCurrentDisplay = document.getElementById('goal-current-display');
+const goalTargetDisplay = document.getElementById('goal-target-display');
+const goalMessage = document.getElementById('goal-message');
+const goalNameInput = document.getElementById('goal-name-input');
+const goalTargetInput = document.getElementById('goal-target-input');
+const saveGoalBtn = document.getElementById('save-goal-btn');
+const clearGoalBtn = document.getElementById('clear-goal-btn');
+
 // Greeting and Date
 const greetingElement = document.getElementById('greeting');
 const currentDateElement = document.getElementById('current-date');
@@ -63,6 +79,7 @@ function init() {
     updateGreeting();
     updateCurrentDate();
     loadProfile();
+    loadGoal();
     updateDisplay();
     attachEventListeners();
 
@@ -121,6 +138,14 @@ function attachEventListeners() {
 
     if (profileImageInput) {
         profileImageInput.addEventListener('change', handleProfileImageUpload);
+    }
+
+    // Goal
+    if (saveGoalBtn) {
+        saveGoalBtn.addEventListener('click', saveGoal);
+    }
+    if (clearGoalBtn) {
+        clearGoalBtn.addEventListener('click', clearGoal);
     }
 }
 
@@ -269,8 +294,10 @@ function handleFilter(e) {
 function updateDisplay() {
     updateBalance();
     updateTransactionList();
+    updateTransactionList();
     updateReports();
     updateCharts();
+    updateGoalWidget();
 }
 
 // Update balance and summary
@@ -621,14 +648,41 @@ function handleProfileImageUpload(e) {
 }
 
 function displayProfileImage(imageData) {
+    const navIconDefault = document.querySelector('.nav-icon-default');
+    const profileDefaultIcon = document.querySelector('.profile-default-icon');
+
     if (imageData && profileImage) {
         profileImage.src = imageData;
         profileImage.style.display = 'block';
+        // Hide the default icon in profile card when image is shown
+        if (profileDefaultIcon) {
+            profileDefaultIcon.style.display = 'none';
+        }
+    } else {
+        // Show the default icon in profile card when no image
+        if (profileDefaultIcon) {
+            profileDefaultIcon.style.display = 'block';
+        }
+        if (profileImage) {
+            profileImage.style.display = 'none';
+        }
     }
 
     if (imageData && navAvatar) {
         navAvatar.src = imageData;
         navAvatar.style.display = 'block';
+        // Hide the default icon when avatar is shown
+        if (navIconDefault) {
+            navIconDefault.style.display = 'none';
+        }
+    } else {
+        // Show the default icon when no avatar
+        if (navIconDefault) {
+            navIconDefault.style.display = 'block';
+        }
+        if (navAvatar) {
+            navAvatar.style.display = 'none';
+        }
     }
 }
 
@@ -639,6 +693,99 @@ function loadProfile() {
 
     if (settings.profileImage) {
         displayProfileImage(settings.profileImage);
+    }
+}
+
+// Goal functions
+function loadGoal() {
+    if (settings.goal) {
+        if (goalNameInput) goalNameInput.value = settings.goal.name || '';
+        if (goalTargetInput) goalTargetInput.value = settings.goal.target || '';
+
+        if (settings.goal.target > 0) {
+            if (clearGoalBtn) clearGoalBtn.style.display = 'block';
+        }
+    }
+}
+
+function saveGoal() {
+    const name = goalNameInput.value.trim();
+    const target = parseFloat(goalTargetInput.value);
+
+    if (!name || !target || target <= 0) {
+        alert('Please enter a valid goal name and target amount');
+        return;
+    }
+
+    settings.goal = {
+        name,
+        target
+    };
+    saveSettings();
+    updateGoalWidget();
+
+    if (clearGoalBtn) clearGoalBtn.style.display = 'block';
+    showNotification('Goal saved successfully!');
+}
+
+function clearGoal() {
+    if (confirm('Are you sure you want to clear your goal?')) {
+        settings.goal = {
+            name: '',
+            target: 0
+        };
+        goalNameInput.value = '';
+        goalTargetInput.value = '';
+        saveSettings();
+        updateGoalWidget();
+
+        if (clearGoalBtn) clearGoalBtn.style.display = 'none';
+        showNotification('Goal cleared');
+    }
+}
+
+function updateGoalWidget() {
+    if (!goalWidget) return;
+
+    if (!settings.goal || !settings.goal.target || settings.goal.target <= 0) {
+        goalWidget.style.display = 'none';
+        return;
+    }
+
+    goalWidget.style.display = 'block';
+    goalNameDisplay.textContent = settings.goal.name;
+
+    // Calculate progress based on total balance
+    const income = transactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+    const expenses = transactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+    const currentBalance = Math.max(0, income - expenses);
+
+    const target = settings.goal.target;
+    const progress = Math.min(100, (currentBalance / target) * 100);
+
+    goalProgressFill.style.width = `${progress}%`;
+    goalCurrentDisplay.textContent = formatCurrency(currentBalance);
+    goalTargetDisplay.textContent = `/ ${formatCurrency(target)}`;
+
+    // Update message
+    if (progress >= 100) {
+        goalMessage.textContent = '🎉 Goal Reached! Congratulations!';
+        goalMessage.style.color = 'var(--primary-green)';
+        goalMessage.style.fontWeight = '600';
+    } else if (progress >= 75) {
+        goalMessage.textContent = 'Almost there! Keep going!';
+        goalMessage.style.color = 'var(--text-light)';
+    } else if (progress >= 50) {
+        goalMessage.textContent = 'Halfway there! You can do it!';
+        goalMessage.style.color = 'var(--text-light)';
+    } else {
+        const remaining = target - currentBalance;
+        goalMessage.textContent = `${formatCurrency(remaining)} to go. Start saving!`;
+        goalMessage.style.color = 'var(--text-light)';
     }
 }
 
